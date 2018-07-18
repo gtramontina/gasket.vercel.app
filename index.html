@@ -1,0 +1,340 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="icon" type="image/png" href="https://png.icons8.com/dusk/50/000000/water-pipe.png">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/meyer-reset/2.0/reset.min.css">
+    <title>gasket – shell pipeline as a service</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css?family=IBM+Plex+Mono');
+        #preview-url,
+        [name="p[]"] {
+            flex-grow: 1;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+        }
+
+        .brand img {
+            width: 24px;
+            height: 24px;
+        }
+
+        .brand img:last-of-type {
+            transform: scaleX(-1);
+        }
+
+        .brand > * + * {
+            margin-left: .25em;
+        }
+
+        .command > * + *,
+        .preview-bar > * + * {
+            margin-left: .5em;
+        }
+
+        .command,
+        .preview-bar {
+            align-items: center;
+            display: flex;
+        }
+
+        .command-placeholder {
+            border: 1px dashed currentColor;
+            border-radius: .125em;
+        }
+
+        .handle {
+            cursor: move;
+        }
+
+        .iframe-container {
+            display: flex;
+            position: relative;
+        }
+
+        .length-warning {
+          color: rgb(239, 72, 54);
+        }
+
+        .pipeline,
+        .preview {
+            margin-top: 3em;
+        }
+
+        .warning {
+          background-color: rgb(239, 72, 54);
+          border: 1px solid rgb(150, 40, 27);
+          border-radius: .125em;
+          color: rgba(255, 255, 255);
+          margin-top: 3em;
+          padding: 1.5em;
+          text-align: justify;
+        }
+
+        .warning a {
+          color: inherit;
+        }
+
+        .warning a:hover {
+          color: rgb(242, 241, 239);
+        }
+
+        a {
+          text-decoration-style: dotted;
+        }
+
+        a:hover {
+          text-decoration-style: solid;
+        }
+
+        body {
+            align-items: center;
+            background-color: rgb(255, 255, 255);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            padding: .5em 2em;
+        }
+
+        body > * + *,
+        main > * + *,
+        .pipeline > * + *,
+        .preview > * + * {
+            margin-top: .5em;
+        }
+
+        body,
+        * {
+            color: rgb(34, 49, 63);
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 14px;
+            line-height: 1.3;
+            margin: 0;
+        }
+
+        button {
+            align-items: center;
+            display: inline-flex;
+            justify-content: center;
+        }
+
+        button,
+        input,
+        iframe {
+            border: 1px solid currentColor;
+            border-radius: .125em;
+            outline: 0;
+            padding: .25em .5em;
+        }
+
+        button:focus,
+        button:hover {
+            background-color: rgb(34, 49, 63);
+            border-color: rgb(34, 49, 63);
+            color: rgb(255, 255, 255);
+        }
+
+        code {
+          background-color: rgb(242, 241, 239);
+          font-size: .9em;
+          padding: 1px  5px;
+          border-radius: 2px;
+        }
+
+        footer {
+          text-align: center;
+        }
+
+        h1 {
+            font-size: 2em;
+        }
+
+        h2 {
+            font-size: 1.5em;
+        }
+
+        iframe {
+            background-color: rgb(242, 241, 239);
+            height: 500px;
+            min-height: 200px;
+            padding: 0;
+            resize: vertical;
+            width: 100%;
+        }
+
+        input:focus {
+            box-shadow: 0 0 4px -1px currentColor;
+            color: rgb(25, 181, 254);
+        }
+
+        input[disabled] {
+          background-color: rgb(242, 241, 239);
+        }
+
+        input:hover,
+        a:hover {
+            color: rgb(37, 116, 169);
+        }
+
+        main {
+            flex-grow: 1;
+            max-width: 900px;
+            width: 100%;
+        }
+
+        main,
+        .pipeline,
+        .preview {
+            display: flex;
+            flex-direction: column;
+        }
+
+        small {
+          font-size: .75em;
+          opacity: .75;
+          vertical-align: middle;
+        }
+
+        strong {
+          color: inherit;
+          font-weight: 600;
+        }
+    </style>
+</head>
+
+<body>
+    <h1 class="brand">
+        <image src="https://png.icons8.com/dusk/50/000000/water-pipe.png">
+        <span>gasket</span>
+        <image src="https://png.icons8.com/dusk/50/000000/water-pipe.png">
+    </h1>
+
+    <p>
+        shell pipeline as a service
+    </p>
+
+    <main>
+        <header class="warning">
+            <strong>Warning:</strong> This is a free service. Please be a good citizen and don't abuse it. <a href="https://github.com/datproject/gasket" target="_blank" rel="noopener inspiration">Gasket</a> runs the commands you specify on the same deployment box (<a href="https://github.com/gtramontina/gasket.now.sh" target="_blank" rel="noopener vcs">contributions</a> to make it more secure are very welcome), so please be careful not to expose any sensitive information. There will be, for sure, malicious people injecting something on this box to gather information, blow this up or both. This service is relying on Zeit's <a href="https://zeit.co/now" target="_blank" rel="noopener hosting">Now</a> free tier and is deployed as a docker container, so it will be frozen from time to time and, hopefully, any screw ups would be solved (until someone f's it up again). Enjoy!
+        </header>
+
+        <section>
+          <strong>NOTE:</strong> if any command in the pipeline writes to <code>sdterr</code>, this service will consider it a failure and will result in a <code>400</code> with a dump of the contents of <code>stderr</code>.
+        </section>
+
+        <section class="pipeline">
+            <h2>Pipeline</h2>
+            <template id="template">
+                <div class="command">
+                    <span class="handle" title="Reorder">&#10303;</span>
+                    <input type="checkbox" class="enabled-toggle" title="Enabled" checked>
+                    <input type="text" name="p[]" placeholder="command" autocomplete="off">
+                    <button class="remove" title="Remove">&times;</button>
+                </div>
+            </template>
+        </section>
+
+        <button class="add">Add Command</button>
+
+        <label>
+            <input type="checkbox" name="redirect"> Redirect</label>
+
+        <section class="preview">
+            <h2>Preview</h2>
+            <div class="preview-bar">
+                <label for="preview-url">URL:</label>
+                <input type="url" id="preview-url" placeholder="Resulting URL…" readonly>
+                <button type="button" class="copy" data-clipboard-target="#preview-url" title="Copy to clipboard">&#9112;</button>
+                <button type="button" class="run" title="Preview">&#9656;</button>
+            </div>
+            <small>Length: <span class="url-length">0</span> <span class="length-warning" style="display:none">&#9888; The URL length has hit a threshold of 2000 characters. You may experience problems with certain browsers.</span></small>
+            <div class="iframe-container">
+                <iframe id="preview"></iframe>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        Built with &#9749; by <a href="https://twitter.com/@gtramontina" target="_blank" rel="noopener author">@gtramontina</a>
+        | Source Code at <a href="https://github.com/gtramontina/gasket.now.sh" target="_blank" rel="noopener vcs">GitHub</a>
+        | Powered by <a href="https://zeit.co/now" target="_blank" rel="noopener hosting">▲ZEIT now</a>
+        | Inspired by <a href="https://github.com/datproject/gasket" target="_blank" rel="noopener inspiration">datproject/gasket</a>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.9.3/html5sortable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.0/clipboard.min.js"></script>
+
+    <script>
+        const animation = 75;
+        const options = {
+            forcePlaceholderSize: true,
+            handle: ".handle",
+            items: ".command",
+            placeholderClass: "command-placeholder"
+        };
+
+        $(document).ready(() => {
+            const origin = $(location).attr("origin");
+            const pipeline = $(".pipeline");
+            const template = $("#template").html().trim();
+
+            function updatePreviewURL() {
+                const shouldRedirect = $("[name='redirect']").is(":checked") ? "redirect=true" : "";
+                const pipeline = $("[name='p[]']:not(:disabled)").map((_i, element) => "p[]=" + escape(element.value)).get();
+                const qs = pipeline.concat(shouldRedirect).filter(Boolean).join("&");
+                const url = origin + "/run?" + qs;
+                $("#preview-url").val(url);
+                $(".url-length").text(url.length);
+                $('.length-warning').toggle(url.length >= 2000)
+            }
+
+            $(".add").click(() => {
+                $(template).hide().appendTo(pipeline).slideDown(animation);
+                sortable(".pipeline", options)[0].addEventListener("sortupdate", updatePreviewURL);
+                updatePreviewURL();
+            });
+
+            $("body").on("click", ".remove", ({ target }) => {
+                const command = $(target).parents(".command");
+                command.slideUp(animation, () => {
+                  command.remove();
+                  updatePreviewURL();
+                });
+            });
+
+            $("body").on("change", ".enabled-toggle", ({ target }) => {
+                const toggle = $(target);
+                const input = toggle.siblings("[name='p[]']");
+                input.prop('disabled', !toggle.is(':checked'));
+                updatePreviewURL();
+            });
+
+            $("body").on("keyup", "[name='p[]']", () => {
+                updatePreviewURL();
+            });
+
+            $("[name='redirect']").on("change", () => {
+                updatePreviewURL();
+            });
+
+            $(".run").click(() => {
+                $("#preview").attr("src", $("#preview-url").val());
+            });
+
+            new ClipboardJS(".copy");
+            updatePreviewURL();
+        });
+    </script>
+</body>
+
+</html>
