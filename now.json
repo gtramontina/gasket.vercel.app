@@ -1,4 +1,9 @@
 {
   "name": "gasket.now.sh",
-  "alias": "gasket.now.sh"
+  "alias": "gasket.now.sh",
+  "github": {
+    "enabled": true,
+    "autoAlias": true,
+    "silent": true
+  }
 }
