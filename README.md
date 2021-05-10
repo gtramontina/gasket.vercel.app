@@ -1,6 +1,6 @@
 <h1>
   <p align="center">
-    gasket.now.sh<br>
+    gasket.vercel.app<br>
     <sup><sub>shell pipeline as a service</sub></sup>
   </p>
 </h1>
@@ -22,4 +22,4 @@
 ## Powered By
 
 * [datproject/gasket](https://github.com/datproject/gasket)
-* [▲ZEIT now](https://zeit.co/now)
+* [▲Vercel](https://vercel.com)

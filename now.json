@@ -1,6 +1,6 @@
 {
-  "name": "gasket.now.sh",
-  "alias": "gasket.now.sh",
+  "name": "gasket.vercel.app",
+  "alias": "gasket.vercel.app",
   "github": {
     "enabled": true,
     "autoAlias": true,
